@@ -1,22 +1,15 @@
-#include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4ParticleGun.hh"
-#include "G4ThreeVector.hh"
-#include "globals.hh"
+#include "G4VUserPrimaryGeneratorAction.hh"
 
-class G4ParticleGun;
-class G4Event;
-class G4Box;
-
-class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
-{
+class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 public:
-	PrimaryGeneratorAction();
-	virtual ~PrimaryGeneratorAction();
+  PrimaryGeneratorAction();
+  virtual ~PrimaryGeneratorAction();
 
-	virtual void GeneratePrimaries(G4Event*);
+  virtual void GeneratePrimaries(G4Event*);
 
-	const G4ParticleGun* GetParticleGun() const {return particleGun;}
+  const G4ParticleGun* GetParticleGun() const {return particleGun;}
 
 private:
-	G4ParticleGun* particleGun;
+  G4ParticleGun* particleGun;
 };

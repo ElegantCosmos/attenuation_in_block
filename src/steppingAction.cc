@@ -1,81 +1,101 @@
-#include "steppingAction.hh"
 #include "G4Step.hh"
-#include "g4root.hh"
-#include "G4VProcess.hh"
-#include "G4ParticleTable.hh"
 #include "G4Gamma.hh"
 #include "G4Electron.hh"
+#include "G4Alpha.hh"
 
-SteppingAction::SteppingAction() : G4UserSteppingAction()
-{}
+#include "statisticsLogger.hh"
+#include "steppingAction.hh"
+
+SteppingAction::SteppingAction()
+{
+  counter_primary = 0;
+  counter_primary_aboveROILowerBound = 0;
+  counter_gamma = 0;
+  counter_gamma_aboveROILowerBound = 0;
+  counter_beta = 0;
+  counter_beta_aboveROILowerBound = 0;
+  counter_alpha = 0;
+  counter_alpha_aboveROILowerBound = 0;
+  ROI_upperBound = 2.570*MeV;
+  ROI_lowerBound = 2.470*MeV;
+}
 
 SteppingAction::~SteppingAction()
 {}
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
-	G4Track* track = step->GetTrack();
-	
-	if (track->GetDefinition() == G4Gamma::GammaDefinition())
-	{
-		G4StepPoint* postStep = step->GetPostStepPoint();
-		assert(postStep);
-		//G4VPhysicalVolume* volume = postStep->GetTouchableHandle()->GetVolume();
-		//if (!volume)
-		//{
-		//	G4ThreeVector momentumDirection = step->GetTrack()->GetMomentumDirection();
-		//	if (momentumDirection.x() > 0)
-		//	{
-		//		G4double energy = postStep->GetKineticEnergy();
-		//		
-		//		if (energy > 2.5){counter++;}
+  G4Track* track = step->GetTrack();
+  const G4StepPoint* preStep = step->GetPreStepPoint();
+  assert(preStep);
+  const G4StepPoint* postStep = step->GetPostStepPoint();
+  assert(postStep);
 
-		//		G4AnalysisManager* analysis = G4AnalysisManager::Instance();
-		//		analysis->FillH1(1,energy);
-		//	}
-		//}
-		G4StepPoint* preStep = step->GetPreStepPoint();
-		assert(preStep);
-		//std::cout << std::endl;
-		//std::cout << "step->GetTrack()->GetMomentumDirection() " << step->GetTrack()->GetMomentumDirection() << std::endl;
-		//std::cout << "preStep->GetMomentumDirection() " << preStep->GetMomentumDirection() << std::endl;
-		//std::cout << "postStep->GetMomentumDirection() " << postStep->GetMomentumDirection() << std::endl;
-		//std::cout << "postStep - preStep " << (postStep->GetPosition() - preStep->GetPosition())/(postStep->GetPosition() - preStep->GetPosition()).mag() << std::endl;
-		const G4int parentID = step->GetTrack()->GetParentID();
-		if (parentID == 0 && step->IsLastStepInVolume() && preStep->GetPhysicalVolume()->GetName() == "Box")
-		{
-			G4ThreeVector momentumDirection = step->GetTrack()->GetMomentumDirection();
-			if (momentumDirection.x() > 0)
-			{
-				G4double energy = postStep->GetKineticEnergy();
+  if (track->GetParentID() == 0) { // primary
+    if (step->IsLastStepInVolume() && // last step of in attenuator
+        preStep->GetPhysicalVolume()->GetName() == "Box") {
+      const G4ThreeVector& momentumDirection = step->GetTrack()->GetMomentumDirection();
+      if (momentumDirection.x() > 0) {
+        G4double energy = postStep->GetKineticEnergy();
 
-				if (energy > 2.5){counter++;}
+        counter_primary++;
+        if (energy > ROI_lowerBound) counter_primary_aboveROILowerBound++;
 
-				G4AnalysisManager* analysis = G4AnalysisManager::Instance();
-				std::cout << "analysis->Fill()" << std::endl;
-				analysis->FillH1(1,energy);
-			}
-			else
-			{
-				std::cout << "oposite direction." << std::endl;
-			}
-		}
-	}
+        StatisticsLogger* logger = StatisticsLogger::GetInstance();
+        logger->FillPrimaryHistogram(energy);
+      } else {
+        //G4cout << "Primary is going in opposite direction." << G4endl;
+      }
+    }
+  }
 
-	if (track->GetDefinition() == G4Electron::ElectronDefinition())
-	{
-		G4StepPoint* postStep = step->GetPostStepPoint();
-		G4VPhysicalVolume* volume = postStep->GetTouchableHandle()->GetVolume();
-		if (!volume)
-		{
-			G4ThreeVector momentumDirection = step->GetTrack()->GetMomentumDirection();
-			if (momentumDirection.x() > 0)
-			{
-				G4double energy = postStep->GetKineticEnergy();
+  if (track->GetDefinition() == G4Gamma::GammaDefinition()) { // gamma
+    if (step->IsLastStepInVolume() && // last step in attenuator
+        preStep->GetPhysicalVolume()->GetName() == "Box") {
+      const G4ThreeVector& momentumDirection = step->GetTrack()->GetMomentumDirection();
+      if (momentumDirection.x() > 0) {
+        G4double energy = postStep->GetKineticEnergy();
 
-				G4AnalysisManager* analysis = G4AnalysisManager::Instance();
-				analysis->FillH1(2,energy);
-			}
-		}
-	}
+        counter_gamma++;
+        if (energy > ROI_lowerBound) counter_gamma_aboveROILowerBound++;
+
+        StatisticsLogger* logger = StatisticsLogger::GetInstance();
+        logger->FillGammaHistogram(energy);
+      } else {
+        //G4cout << "Gamma is going in opposite direction." << G4endl;
+      }
+    }
+  } else if (track->GetDefinition() == G4Electron::ElectronDefinition()) { // beta
+    if (step->IsLastStepInVolume() && // last step in attenuator
+        preStep->GetPhysicalVolume()->GetName() == "Box") {
+      const G4ThreeVector& momentumDirection = step->GetTrack()->GetMomentumDirection();
+      if (momentumDirection.x() > 0) {
+        G4double energy = postStep->GetKineticEnergy();
+
+        counter_beta++;
+        if (energy > ROI_lowerBound) counter_beta_aboveROILowerBound++;
+
+        StatisticsLogger* logger = StatisticsLogger::GetInstance();
+        logger->FillBetaHistogram(energy);
+      } else {
+        //G4cout << "Beta is going in opposite direction." << G4endl;
+      }
+    }
+  } else if (track->GetDefinition() == G4Alpha::AlphaDefinition()) { // alpha
+    if (step->IsLastStepInVolume() && // last step in attenuator
+        preStep->GetPhysicalVolume()->GetName() == "Box") {
+      const G4ThreeVector& momentumDirection = step->GetTrack()->GetMomentumDirection();
+      if (momentumDirection.x() > 0) {
+        G4double energy = postStep->GetKineticEnergy();
+
+        counter_alpha++;
+        if (energy > ROI_lowerBound) counter_alpha_aboveROILowerBound++;
+
+        StatisticsLogger* logger = StatisticsLogger::GetInstance();
+        logger->FillAlphaHistogram(energy);
+      } else {
+        //G4cout << "Alpha is going in opposite direction." << G4endl;
+      }
+    }
+  }
 }

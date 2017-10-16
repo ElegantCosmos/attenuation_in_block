@@ -129,11 +129,8 @@ private:
 
 protected:
   virtual void AddTransportation();
-  
-
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
-

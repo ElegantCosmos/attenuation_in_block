@@ -429,6 +429,3 @@ void PhysicsList::SetDetectorCut(G4double cut)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 // Optical Processes ////////////////////////////////////////////////////////
-
-
-

@@ -1,7 +1,4 @@
-//#include <CLHEP/Random/Random.h>
-
-#include "G4Event.hh"
-#include "G4RunManager.hh"
+#include "Randomize.hh"
 
 #include "eventAction.hh"
 
@@ -9,7 +6,7 @@
 
 EventAction::EventAction()
 {
-	fEventNo = 0;
+  fEventNo = 0;
 } 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -21,15 +18,15 @@ EventAction::~EventAction()
 
 void EventAction::BeginOfEventAction(const G4Event*)
 {    
-	std::cout << "Event number " << fEventNo << std::endl;
-	G4Random::setTheSeed(fEventNo);
+  //std::cout << "Event number " << fEventNo << std::endl;
+  G4Random::setTheSeed(fEventNo);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void EventAction::EndOfEventAction(const G4Event*)
 {   
-	fEventNo++;
+  fEventNo++;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
