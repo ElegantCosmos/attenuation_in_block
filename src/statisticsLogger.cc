@@ -12,10 +12,10 @@ StatisticsLogger::StatisticsLogger()
   analysis->OpenFile("test");
 
   analysis->SetFirstHistoId(0);
-  analysis->CreateH1("primary", "Energy of primaries after attenuation (MeV)", 100, 0, 10*MeV); // histogram 0
-  analysis->CreateH1("gamma", "Energy of gamma after attenuation (MeV)", 35, 0, 3.5*MeV); // histogram 1
-  analysis->CreateH1("electron", "Energy of electrons after attenuation (MeV)", 35, 0, 3.5*MeV); // histogram 2
-  analysis->CreateH1("alpha", "Energy of alphas after attenuation (MeV)", 100, 0, 10*MeV); // histogram 3
+  analysis->CreateH1("primaries", "Energy of primaries after attenuation (MeV)", 100, 0, 10*MeV); // histogram 0
+  analysis->CreateH1("gammas", "Energy of gammas after attenuation (MeV)", 35, 0, 3.5*MeV); // histogram 1
+  analysis->CreateH1("electrons", "Energy of electrons after attenuation (MeV)", 35, 0, 3.5*MeV); // histogram 2
+  analysis->CreateH1("alphas", "Energy of alphas after attenuation (MeV)", 100, 0, 10*MeV); // histogram 3
 
   analysis->CreateNtuple("statistics", "statistics");
   analysis->SetFirstNtupleColumnId(0);
