@@ -1,4 +1,4 @@
-/vis/open OGLI
+/vis/open OGLIX
 /vis/drawVolume Box
 /vis/scene/add/trajectories
 /vis/scene/add/hits
