@@ -31,3 +31,6 @@ endif()
 
 # (6)
 install(TARGETS attenuationInBlock DESTINATION bin)
+
+# (7)
+configure_file(vis.mac vis.mac COPYONLY)
