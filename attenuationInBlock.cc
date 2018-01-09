@@ -44,29 +44,27 @@ int main(int argc, char** argv)
 
   //Visualization
 
-  //G4VisManager* visManager = new G4VisExecutive();
-  //visManager->Initialize();
+  G4VisManager* visManager = new G4VisExecutive();
+  visManager->Initialize();
 
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
+  UImanager->ApplyCommand("/run/verbose 1");
+  UImanager->ApplyCommand("/event/verbose 1");
+  UImanager->ApplyCommand("/tracking/verbose 1");
+  UImanager->ApplyCommand("/control/execute vis.mac");
 
-  //G4UIExecutive* ui = new G4UIExecutive(argc, argv);
-
-  //UImanager->ApplyCommand("/run/verbose 1");
-  //UImanager->ApplyCommand("/event/verbose 1");
-  //UImanager->ApplyCommand("/tracking/verbose 1");
-  //UImanager->ApplyCommand("/control/execute vis.mac");
-
-  //ui->SessionStart();
-  //delete ui;
-
-  //delete visManager;
-
-  const int nEvents = 100000;
-  //const int nEvents = 100;
+  //const int nEvents = 1;
+  const int nEvents = 100;
+  //const int nEvents = 100000;
   StatisticsLogger* logger = StatisticsLogger::GetInstance();
   logger->SetInitialNPrimaries(nEvents);
   runManager->BeamOn(nEvents);
 
+  G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+  ui->SessionStart();
+
+  delete ui;
+  delete visManager;
   delete runManager;
 
   return 0;
